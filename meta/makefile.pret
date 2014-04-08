@@ -1,0 +1,19 @@
+# This file provides instructions for packaging.
+
+@prefix : <http://ontologi.es/doap-deps#>.
+
+`Role-Inspector`
+	:runtime-requirement    [ :on "perl 5.006"^^:CpanId ];
+	:runtime-requirement    [ :on "Module::Runtime"^^:CpanId ];
+	:runtime-requirement    [ :on "Scalar::Util"^^:CpanId ];
+	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
+	:test-requirement       [ :on "Test::Modern 0.006"^^:CpanId ];
+	:test-recommendation    [ :on "Moose::Role 2.0600"^^:CpanId ];
+	:test-recommendation    [ :on "Mouse::Role 1.00"^^:CpanId ];
+	:test-recommendation    [ :on "Moo::Role 1.000000"^^:CpanId ];
+	:test-recommendation    [ :on "Role::Tiny 1.000000"^^:CpanId ];
+	:test-recommendation    [ :on "Role::Basic"^^:CpanId ];
+	:test-recommendation    [ :on "mop::role"^^:CpanId ];
+	:develop-recommendation [ :on "Dist::Inkt 0.001"^^:CpanId ];
+	.
+

@@ -1,0 +1,19 @@
+# This file contains general metadata about the project.
+
+@prefix : <http://usefulinc.com/ns/doap#>.
+
+`Role-Inspector`
+	:programming-language "Perl" ;
+	:shortdesc            "introspection for roles";
+	:homepage             <https://metacpan.org/release/Role-Inspector>;
+	:download-page        <https://metacpan.org/release/Role-Inspector>;
+	:bug-database         <http://rt.cpan.org/Dist/Display.html?Queue=Role-Inspector>;
+	:repository           [ a :GitRepository; :browse <https://github.com/tobyink/p5-role-inspector> ];
+	:created              2014-04-08;
+	:license              <http://dev.perl.org/licenses/>;
+	:maintainer           cpan:TOBYINK;
+	:developer            cpan:TOBYINK.
+
+<http://dev.perl.org/licenses/>
+	dc:title  "the same terms as the perl 5 programming language system itself".
+
