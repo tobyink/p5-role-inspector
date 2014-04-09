@@ -352,7 +352,7 @@ it:
 
 An alternative way to do this is:
 
-   push @Role::Inspector::SCANNER, sub {
+   push @Role::Inspector::SCANNERS, sub {
       my $r = shift;
       ...;
    };
