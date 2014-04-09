@@ -10,3 +10,10 @@
 		item "Correct name for @Role::Inspector::SCANNERS in example."^^Documentation;
 	].
 
+`Role-Inspector 0.003 cpan:TOBYINK`
+	issued  2014-04-09;
+	changeset [
+		item "Tests added for Role::Tiny and Moose::Role roles when Moo is in memory."^^Tests;
+		item "Tests added for Moo::Role roles when Moose is in memory."^^Tests;
+	].
+
