@@ -4,3 +4,9 @@
 	issued  2014-04-08;
 	label   "Initial release".
 
+`Role-Inspector 0.002 cpan:TOBYINK`
+	issued  2014-04-09;
+	changeset [
+		item "Correct name for @Role::Inspector::SCANNERS in example."^^Documentation;
+	].
+
