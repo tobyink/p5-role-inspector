@@ -4,8 +4,8 @@
 
 =head1 PURPOSE
 
-Test that Role::Inspector works with Moo::Role, and
-continues to work with Role::Tiny when Moo is loaded into memory.
+Test that Role::Inspector works with Moo::Role and Moose::Role,
+when both are loaded into memory.
 
 =head1 AUTHOR
 
@@ -22,9 +22,9 @@ the same terms as the Perl 5 programming language system itself.
 
 use strict;
 use warnings;
-use Test::Modern -requires => { 'Moo::Role' => '1.000000' };
+use Test::Modern -requires => { 'Moose' => '2.0600', 'Moo' => '1.000000' };
 
-use Role::Inspector qw( get_role_info );
+use Role::Inspector get_role_info => { no_meta => 1 };
 
 is_deeply(
 	get_role_info('Local::MooRole'),
@@ -37,14 +37,13 @@ is_deeply(
 ) or diag explain(get_role_info('Local::MooRole'));
 
 is_deeply(
-	get_role_info('Local::RoleTiny'),
+	get_role_info('Local::MooseRole'),
 	+{
-		name  => 'Local::RoleTiny',
-		type  => 'Role::Tiny',
-		api   => [sort qw( meth req )],
+		name  => 'Local::MooseRole',
+		type  => 'Moose::Role',
+		api   => [sort qw( meta attr set_attr clear_attr delegated meth req )],
 	},
-	'can inspect Role::Tiny roles',
-) or diag explain(get_role_info('Local::RoleTiny'));
+	'can inspect Moose roles',
+) or diag explain(get_role_info('Local::MooseRole'));
 
 done_testing;
-
