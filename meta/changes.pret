@@ -17,3 +17,9 @@
 		item "Tests added for Moo::Role roles when Moose is in memory."^^Tests;
 	].
 
+`Role-Inspector 0.004 cpan:TOBYINK`
+	issued  2014-04-15;
+	changeset [
+		item "Include 'provides' and 'requires' keys in the returned hashref."^^Addition;
+	].
+
