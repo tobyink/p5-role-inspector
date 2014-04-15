@@ -28,9 +28,11 @@ use Role::Inspector get_role_info => { no_meta => 1 };
 is_deeply(
 	get_role_info('Local::MopRole'),
 	+{
-		name  => 'Local::MopRole',
-		type  => 'mop::role',
-		api   => [sort qw( attr meth req )],
+		name     => 'Local::MopRole',
+		type     => 'mop::role',
+		api      => [sort qw( attr meth req )],
+		requires => [sort qw( req )],
+		provides => [sort qw( attr meth )],
 	},
 	'can inspect p5-mop-redux roles',
 ) or diag explain(get_role_info('Local::MopRole'));

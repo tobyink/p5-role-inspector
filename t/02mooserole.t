@@ -28,9 +28,11 @@ use Role::Inspector get_role_info => { no_meta => 1 };
 is_deeply(
 	get_role_info('Local::MooseRole'),
 	+{
-		name  => 'Local::MooseRole',
-		type  => 'Moose::Role',
-		api   => [sort qw( meta attr set_attr clear_attr delegated meth req )],
+		name     => 'Local::MooseRole',
+		type     => 'Moose::Role',
+		api      => [sort qw( meta attr set_attr clear_attr delegated meth req )],
+		requires => [sort qw( req )],
+		provides => [sort qw( meta attr set_attr clear_attr delegated meth )],
 	},
 	'can inspect Moose roles',
 ) or diag explain(get_role_info('Local::MooseRole'));

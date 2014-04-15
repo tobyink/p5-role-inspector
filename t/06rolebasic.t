@@ -28,9 +28,11 @@ use Role::Inspector qw( get_role_info );
 is_deeply(
 	get_role_info('Local::RoleBasic'),
 	+{
-		name  => 'Local::RoleBasic',
-		type  => 'Role::Basic',
-		api   => [sort qw( meth req )],
+		name     => 'Local::RoleBasic',
+		type     => 'Role::Basic',
+		api      => [sort qw( meth req )],
+		requires => [sort qw( req )],
+		provides => [sort qw( meth )],
 	},
 	'can inspect Role::Basic roles',
 ) or diag explain(get_role_info('Local::RoleBasic'));

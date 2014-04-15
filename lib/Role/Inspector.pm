@@ -23,6 +23,7 @@ sub get_role_info
 	my $me = shift;
 	use_package_optimistically($_[0]);
 	my ($info) = grep defined, map $_->(@_), @SCANNERS;
+	$me->_canonicalize($info, @_);
 	return $info;
 }
 
@@ -35,6 +36,34 @@ sub _generate_get_role_info
 		delete($info->{meta}) if $args->{no_meta};
 		return $info;
 	};
+}
+
+sub _canonicalize
+{
+	my $me = shift;
+	my ($info) = @_;
+	
+	if ( $info->{api} and not( $info->{provides} && $info->{requires} ) )
+	{
+		my @provides;
+		my @requires;
+		for my $method (@{ $info->{api} })
+		{
+			push @{
+				$info->{name}->can($method) ? \@provides : \@requires
+			}, $method;
+		}
+		$info->{provides} ||= \@provides;
+		$info->{requires} ||= \@requires;
+	}
+	
+	if ( not $info->{api} )
+	{
+		$info->{api} = [sort(
+			@{ $info->{provides} },
+			@{ $info->{requires} },
+		)];
+	}
 }
 
 sub _expand_attributes
@@ -116,14 +145,11 @@ learn {
 	return unless $meta && $meta->isa('mop::role');
 	
 	return {
-		name   => $role,
-		type   => 'mop::role',
-		api    => [
-			sort
-			map( $_->name, $meta->methods ),
-			$meta->required_methods,
-		],
-		meta   => $meta,
+		name     => $role,
+		type     => 'mop::role',
+		provides => [ sort(map($_->name, $meta->methods)) ],
+		requires => [ sort($meta->required_methods) ],
+		meta     => $meta,
 	};
 };
 
@@ -149,9 +175,11 @@ learn {
 		if $type ne 'Role::Tiny';
 	
 	return {
-		name   => $role,
-		type   => $type,
-		api    => [ sort(@methods) ],
+		name     => $role,
+		type     => $type,
+		api      => [ sort(@methods) ],  # keep: potentially more accurate
+		provides => [ sort keys %{ $type->_concrete_methods_of($role) } ],
+		requires => [ sort @{ $Role::Tiny::INFO{$role}{requires} or [] } ],
 	};
 };
 
@@ -165,15 +193,11 @@ learn {
 	return unless $meta && $meta->isa('Moose::Meta::Role');
 	
 	return {
-		name   => $role,
-		type   => 'Moose::Role',
-		api    => [
-			sort
-			map($_->name, $meta->get_required_method_list),
-			$meta->get_method_list,
-			__PACKAGE__->_expand_attributes($role, $meta),
-		],
-		meta   => $meta,
+		name     => $role,
+		type     => 'Moose::Role',
+		meta     => $meta,
+		provides => [ sort($meta->get_method_list, __PACKAGE__->_expand_attributes($role, $meta)) ],
+		requires => [ sort(map($_->name, $meta->get_required_method_list)) ],
 	};
 };
 
@@ -187,15 +211,11 @@ learn {
 	return unless $meta && $meta->isa('Mouse::Meta::Role');
 	
 	return {
-		name   => $role,
-		type   => 'Mouse::Role',
-		api    => [
-			sort
-			$meta->get_required_method_list,
-			$meta->get_method_list,
-			__PACKAGE__->_expand_attributes($role, $meta),
-		],
-		meta   => $meta,
+		name     => $role,
+		type     => 'Mouse::Role',
+		meta     => $meta,
+		provides => [ sort($meta->get_method_list, __PACKAGE__->_expand_attributes($role, $meta)) ],
+		requires => [ sort($meta->get_required_method_list) ],
 	};
 };
 
@@ -207,13 +227,10 @@ learn {
 	return unless eval { 'Role::Basic'->_load_role($role) };
 	
 	return {
-		name   => $role,
-		type   => 'Role::Basic',
-		api    => [
-			sort
-			'Role::Basic'->get_required_by($role),
-			keys(%{ 'Role::Basic'->_get_methods($role) })
-		],
+		name     => $role,
+		type     => 'Role::Basic',
+		provides => [ sort(keys(%{ 'Role::Basic'->_get_methods($role) })) ],
+		requires => [ sort('Role::Basic'->get_required_by($role)) ],
 	};
 };
 
@@ -316,9 +333,14 @@ C<api> - an arrayref of method names required/provided by the role
 
 =item *
 
+C<provides> and C<requires> - the same as C<api>, but split into lists
+of methods provided and required by the role
+
+=item *
+
 C<meta> - a metaobject for the role (e.g. a L<Moose::Meta::Role> object).
 This key may be absent if the role implementation does not provide a
-metaobject.
+metaobject
 
 =back
 
@@ -339,14 +361,10 @@ it:
       my $r = shift;
       return unless My::Implementation::is_role($r);
       return {
-         name  => $r,
-         type  => 'My::Implementation',
-         api   => [
-            sort(
-               @{ My::Implementation::required_methods($r) },
-               @{ My::Implementation::provided_methods($r) },
-            )
-         ],
+         name     => $r,
+         type     => 'My::Implementation',
+         provides => [ sort(@{My::Implementation::provides($r)}) ],
+         requires => [ sort(@{My::Implementation::requires($r)}) ],
       };
    };
 
@@ -360,6 +378,9 @@ An alternative way to do this is:
 You can do the C<push> thing without having loaded Role::Inspector.
 This makes it suitable for doing inside My::Implementation itself,
 without introducing an additional dependency on Role::Inspector.
+
+Note that if you don't provide all of C<provides>, C<requires>, and
+C<api>, Role::Inspector will attempt to guess the missing parts.
 
 =back
 

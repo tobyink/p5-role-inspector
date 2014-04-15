@@ -6,6 +6,8 @@ our %INFO = (
 	api   => [qw/ meth req /],
 );
 
+sub meth { 42 }
+
 package Local::Implementation;
 
 push @Role::Inspector::SCANNERS, sub {
