@@ -37,5 +37,17 @@ is_deeply(
 	'can inspect Moose roles',
 ) or diag explain(get_role_info('Local::MooseRole'));
 
+is_deeply(
+	get_role_info('Local::MooseRole2'),
+	+{
+		name     => 'Local::MooseRole2',
+		type     => 'Moose::Role',
+		api      => [sort qw( meta attr set_attr clear_attr delegated meth meth2 req req2 )],
+		requires => [sort qw( req req2 )],
+		provides => [sort qw( meta attr set_attr clear_attr delegated meth meth2 )],
+	},
+	'can inspect Moose roles that consume other roles',
+) or diag explain(get_role_info('Local::MooseRole2'));
+
 done_testing;
 

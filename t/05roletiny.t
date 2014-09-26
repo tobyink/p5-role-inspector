@@ -37,5 +37,17 @@ is_deeply(
 	'can inspect Role::Tiny roles',
 ) or diag explain(get_role_info('Local::RoleTiny'));
 
+is_deeply(
+	get_role_info('Local::RoleTiny2'),
+	+{
+		name     => 'Local::RoleTiny2',
+		type     => 'Role::Tiny',
+		api      => [sort qw( meth meth2 req req2 )],
+		requires => [sort qw( req req2 )],
+		provides => [sort qw( meth meth2 )],
+	},
+	'can inspect Role::Tiny roles that consume other roles',
+) or diag explain(get_role_info('Local::RoleTiny2'));
+
 done_testing;
 
