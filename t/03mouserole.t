@@ -23,7 +23,7 @@ use strict;
 use warnings;
 use Test::Modern -requires => { 'Mouse::Role' => '1.00' };
 
-use Role::Inspector get_role_info => { no_meta => 1 };
+use Role::Inspector "does_role", get_role_info => { no_meta => 1 };
 
 is_deeply(
 	get_role_info('Local::MouseRole'),
@@ -49,5 +49,29 @@ is_deeply(
 	'can inspect Mouse roles that consume other roles',
 ) or diag explain(get_role_info('Local::MouseRole2'));
 
-done_testing;
+ok(
+	does_role('Local::MouseRole', 'Local::MouseRole'),
+	'does_role($x, $x)',
+);
 
+ok(
+	does_role('Local::MouseRole2', 'Local::MouseRole'),
+	'does_role($x, $y) where $x is a role that consumes $y',
+);
+
+ok(
+	does_role('Local::MouseClass', 'Local::MouseRole2'),
+	'does_role($x, $y) where $x is a class that consumes $y directly',
+);
+
+ok(
+	does_role('Local::MouseClass', 'Local::MouseRole'),
+	'does_role($x, $y) where $x is a class that consumes $y indirectly',
+);
+
+ok(
+	!does_role('Local::MouseRole', 'Local::MouseRole2'),
+	'!does_role($x, $y) where $x is a role that consumes $y',
+);
+
+done_testing;

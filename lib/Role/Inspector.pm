@@ -7,9 +7,15 @@ package Role::Inspector;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.004';
 
-use Exporter::Shiny qw( get_role_info learn );
+use Exporter::Shiny qw( get_role_info learn does_role );
 use Module::Runtime qw( use_package_optimistically );
 use Scalar::Util qw( blessed );
+
+BEGIN {
+	*uniq = eval { require List::MoreUtils }
+		? \&List::MoreUtils::uniq 
+		: sub { my %already; grep !$already{$_}++, @_ }
+}
 
 our @SCANNERS;
 
@@ -60,9 +66,15 @@ sub _canonicalize
 	if ( not $info->{api} )
 	{
 		$info->{api} = [sort(
-			@{ $info->{provides} },
-			@{ $info->{requires} },
+			@{ $info->{provides} ||= [] },
+			@{ $info->{requires} ||= [] },
 		)];
+	}
+	
+	for my $k (qw/ api provides requires /) {
+		@{ $info->{$k} } =
+			map ref($_) ? $_->{name} : $_,
+			uniq @{ $info->{$k} };
 	}
 }
 
@@ -233,6 +245,77 @@ learn {
 		requires => [ sort('Role::Basic'->get_required_by($role)) ],
 	};
 };
+
+sub does_role
+{
+	my $me = shift;
+	my ($thing, $role) = @_;
+	
+	return !!0 if !defined($thing);
+	return !!0 if ref($thing) && !blessed($thing);
+	
+	ref($_) or use_package_optimistically($_) for @_;
+	
+	return !!1 if $thing->can('does') && $thing->does($role);
+	return !!1 if $thing->can('DOES') && $thing->DOES($role);
+	
+	my $info = $me->get_role_info($role)
+		or return !!0;
+	
+	if ($info->{type} eq 'Role::Tiny' or $info->{type} eq 'Moo::Role')
+	{
+		return !!1 if Role::Tiny::does_role($thing, $role);
+	}
+	
+	if ($info->{type} eq 'Moose::Role')
+	{
+		require Moose::Util;
+		return !!1 if Moose::Util::does_role($thing, $role);
+	}
+	
+	if ($info->{type} eq 'Mouse::Role')
+	{
+		require Mouse::Util;
+		return !!1 if Mouse::Util::does_role($thing, $role);
+	}
+	
+	if (not ref $thing)
+	{
+		my $info2 = $me->get_role_info($thing) || { type => '' };
+		
+		if ($info2->{type} eq 'Role::Tiny' or $info2->{type} eq 'Moo::Role')
+		{
+			return !!1 if Role::Tiny::does_role($thing, $role);
+		}
+		
+		if ($info2->{type} eq 'Moose::Role'
+		or $INC{'Moose.pm'} && Moose::Util::find_meta($thing))
+		{
+			require Moose::Util;
+			return !!1 if Moose::Util::does_role($thing, $role);
+		}
+		
+		if ($info2->{type} eq 'Mouse::Role'
+		or $INC{'Mouse.pm'} && Mouse::Util::find_meta($thing))
+		{
+			require Mouse::Util;
+			return !!1 if Mouse::Util::does_role($thing, $role);
+		}		
+	}
+	
+	# No special handling for Role::Basic, but hopefully checking
+	# `DOES` worked!
+	
+	!!0;
+}
+
+# very simple class method curry
+sub _generate_does_role
+{
+	my $me = shift;
+	sub { $me->does_role(@_) };
+}
+
 
 1;
 

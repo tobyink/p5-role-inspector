@@ -24,7 +24,7 @@ use strict;
 use warnings;
 use Test::Modern -requires => { 'Moo::Role' => '1.000000' };
 
-use Role::Inspector qw( get_role_info );
+use Role::Inspector qw( get_role_info does_role );
 
 is_deeply(
 	do {
@@ -74,5 +74,29 @@ is_deeply(
 	'can inspect Moo roles what consume other roles',
 ) or diag explain(get_role_info('Local::MooRole2'));
 
-done_testing;
+ok(
+	does_role('Local::MooRole', 'Local::MooRole'),
+	'does_role($x, $x)',
+);
 
+ok(
+	does_role('Local::MooRole2', 'Local::MooRole'),
+	'does_role($x, $y) where $x is a role that consumes $y',
+);
+
+ok(
+	does_role('Local::MooClass', 'Local::MooRole2'),
+	'does_role($x, $y) where $x is a class that consumes $y directly',
+);
+
+ok(
+	does_role('Local::MooClass', 'Local::MooRole'),
+	'does_role($x, $y) where $x is a class that consumes $y indirectly',
+);
+
+ok(
+	!does_role('Local::MooRole', 'Local::MooRole2'),
+	'!does_role($x, $y) where $x is a role that consumes $y',
+);
+
+done_testing;

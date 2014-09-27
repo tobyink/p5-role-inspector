@@ -23,7 +23,7 @@ use strict;
 use warnings;
 use Test::Modern -requires => { 'Moose::Role' => '2.0600' };
 
-use Role::Inspector get_role_info => { no_meta => 1 };
+use Role::Inspector "does_role", get_role_info => { no_meta => 1 };
 
 is_deeply(
 	get_role_info('Local::MooseRole'),
@@ -48,6 +48,31 @@ is_deeply(
 	},
 	'can inspect Moose roles that consume other roles',
 ) or diag explain(get_role_info('Local::MooseRole2'));
+
+ok(
+	does_role('Local::MooseRole', 'Local::MooseRole'),
+	'does_role($x, $x)',
+);
+
+ok(
+	does_role('Local::MooseRole2', 'Local::MooseRole'),
+	'does_role($x, $y) where $x is a role that consumes $y',
+);
+
+ok(
+	does_role('Local::MooseClass', 'Local::MooseRole2'),
+	'does_role($x, $y) where $x is a class that consumes $y directly',
+);
+
+ok(
+	does_role('Local::MooseClass', 'Local::MooseRole'),
+	'does_role($x, $y) where $x is a class that consumes $y indirectly',
+);
+
+ok(
+	!does_role('Local::MooseRole', 'Local::MooseRole2'),
+	'!does_role($x, $y) where $x is a role that consumes $y',
+);
 
 done_testing;
 
