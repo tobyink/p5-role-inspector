@@ -441,6 +441,12 @@ This should mostly give the same answers as C<< $thing->DOES($role) >>,
 but may be slightly more reliable in some cross-implementation (i.e.
 Moose roles consuming Moo roles) cases.
 
+=back
+
+=head2 Extending Role::Inspector
+
+=over
+
 =item C<< Role::Inspector::learn { BLOCK } >>
 
 In the unlikely situation that you have to deal with some other role
