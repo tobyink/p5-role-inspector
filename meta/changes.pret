@@ -23,3 +23,12 @@
 		item "Include 'provides' and 'requires' keys in the returned hashref."^^Addition;
 	].
 
+`Role-Inspector 0.005 cpan:TOBYINK`
+	issued  2014-09-27;
+	changeset [
+		item "Provide the `does_role` function."^^Addition;
+		item "Tests for indirect consumption of roles."^^Tests;
+		item "Split documentation for `learn` and `@SCANNERS` into a separate section."^^Documentation;
+		item "Split documentation for method call style into a separate section."^^Documentation;
+	].
+

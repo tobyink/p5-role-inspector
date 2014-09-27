@@ -5,7 +5,7 @@ use warnings;
 package Role::Inspector;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.004';
+our $VERSION   = '0.005';
 
 use Exporter::Shiny qw( get_role_info learn does_role );
 use Module::Runtime qw( use_package_optimistically );
