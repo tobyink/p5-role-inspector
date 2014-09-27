@@ -427,10 +427,7 @@ metaobject
 
 =back
 
-This function may be exported, but is not exported by default. If you do
-not wish to export it, you may call it as a class method:
-
-   Role::Inspector->get_role_info($package_name)
+This function may be exported, but is not exported by default.
 
 =item C<< does_role($thing, $role) >>
 
@@ -441,7 +438,18 @@ This should mostly give the same answers as C<< $thing->DOES($role) >>,
 but may be slightly more reliable in some cross-implementation (i.e.
 Moose roles consuming Moo roles) cases.
 
+This function may be exported, but is not exported by default.
+
 =back
+
+=head2 Methods
+
+If you do not wish to export the functions provided by Role::Inspector,
+you may call them as a class methods:
+
+   my $info = Role::Inspector->get_role_info($package_name);
+
+   $thing->blah() if Role::Inspector->does_role($thing, $role);
 
 =head2 Extending Role::Inspector
 
