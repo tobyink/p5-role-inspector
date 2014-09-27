@@ -13,7 +13,7 @@ use Scalar::Util qw( blessed );
 
 BEGIN {
 	*uniq = eval { require List::MoreUtils }
-		? \&List::MoreUtils::uniq 
+		? \&List::MoreUtils::uniq
 		: sub { my %already; grep !$already{$_}++, @_ }
 }
 
@@ -300,7 +300,7 @@ sub does_role
 		{
 			require Mouse::Util;
 			return !!1 if Mouse::Util::does_role($thing, $role);
-		}		
+		}
 	}
 	
 	# No special handling for Role::Basic, but hopefully checking
