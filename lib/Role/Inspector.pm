@@ -432,6 +432,15 @@ not wish to export it, you may call it as a class method:
 
    Role::Inspector->get_role_info($package_name)
 
+=item C<< does_role($thing, $role) >>
+
+Returns a boolean indicating if C<< $thing >> does role C<< $role >>.
+C<< $thing >> can be an object, a class name, or a role name.
+
+This should mostly give the same answers as C<< $thing->DOES($role) >>,
+but may be slightly more reliable in some cross-implementation (i.e.
+Moose roles consuming Moo roles) cases.
+
 =item C<< Role::Inspector::learn { BLOCK } >>
 
 In the unlikely situation that you have to deal with some other role
