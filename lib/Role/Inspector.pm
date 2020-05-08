@@ -185,13 +185,23 @@ learn {
 	
 	@methods = $type->methods_provided_by($role)
 		if $type ne 'Role::Tiny';
+
+	my @requires = @{ $Role::Tiny::INFO{$role}{requires} or [] };
+
+	my $modifiers = $Role::Tiny::INFO{$role}{modifiers} || [];
+	foreach my $modifier (@$modifiers) {
+		my @modified = @$modifier[ 1 .. $#$modifier - 1 ];
+		# handle: before ['foo', 'bar'] => sub { ... }
+		@modified = @{ $modified[0] } if ref $modified[0] eq 'ARRAY';
+		push @requires, @modified;
+	}
 	
 	return {
 		name     => $role,
 		type     => $type,
 		api      => [ sort(@methods) ],  # keep: potentially more accurate
 		provides => [ sort keys %{ $type->_concrete_methods_of($role) } ],
-		requires => [ sort @{ $Role::Tiny::INFO{$role}{requires} or [] } ],
+		requires => [ sort(@requires) ],
 	};
 };
 
