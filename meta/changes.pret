@@ -32,3 +32,9 @@
 		item "Split documentation for method call style into a separate section."^^Documentation;
 	].
 
+`Role-Inspector 0.006 cpan:TOBYINK`
+	issued  2020-05-13;
+	changeset [
+		item "If a method is both required and provided by a role, ignore that it is required because effectively it isn't."^^Change;
+		item "Method modifiers in roles now count as required methods, unless the method is also provided by the role."^^Change;
+	].
