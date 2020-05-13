@@ -54,7 +54,7 @@ is_deeply(
 	+{
 		name     => 'Local::RoleTiny3',
 		type     => 'Role::Tiny',
-		api      => [sort qw( meth3 req )],
+		api      => [sort qw( meth3 mod req req_list1 req_list2 req_list3 req_array_ref1 req_array_ref2 )],
 		requires => [sort qw( mod req req_list1 req_list2 req_list3 req_array_ref1 req_array_ref2 )],
 		provides => [sort qw( meth3 )],
 	},
